@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// ---------------- Stack Node ----------------
+
 struct Node {
     char data;
     struct Node *next;
 } *top = NULL;
 
-// ---------------- Stack Functions ----------------
 void push(char x) {
     struct Node *t = (struct Node *)malloc(sizeof(struct Node));
     if (t == NULL) {
@@ -19,6 +18,7 @@ void push(char x) {
         top = t;
     }
 }
+
 
 char pop() {
     struct Node *t;
@@ -40,22 +40,19 @@ char stackTop() {
     return '\0';
 }
 
-int isEmpty() {
-    return top == NULL;
-}
-
-// ---------------- Utility Functions ----------------
+// Check precedence of operators
 int precedence(char x) {
     if (x == '+' || x == '-') return 1;
     else if (x == '*' || x == '/') return 2;
     return 0;
 }
 
+// Check if a character is an operand
 int isOperand(char x) {
     return !(x == '+' || x == '-' || x == '*' || x == '/' || x == '(' || x == ')');
 }
 
-// ---------------- Infix to Postfix ----------------
+// Convert infix to postfix
 char* In_TO_POST(char *infix) {
     int len = strlen(infix);
     char *postfix = (char *)malloc((len + 1) * sizeof(char));
@@ -63,36 +60,34 @@ char* In_TO_POST(char *infix) {
 
     for (i = 0; i < len; i++) {
         if (isOperand(infix[i])) {
-            postfix[j++] = infix[i];   // Append operand
+            postfix[j++] = infix[i]; // Append operand
         } 
         else if (infix[i] == '(') {
-            push(infix[i]);            // Push '('
+            push(infix[i]); // Push '('
         } 
         else if (infix[i] == ')') {
-            while (!isEmpty() && stackTop() != '(') {
-                postfix[j++] = pop();  // Pop until '('
+            while (top != NULL && stackTop() != '(') {
+                postfix[j++] = pop(); // Pop until '('
             }
-            pop(); // Discard '('
+            pop(); // Remove '('
         } 
-        else { // Operator
-            while (!isEmpty() && stackTop() != '(' &&
-                   precedence(stackTop()) >= precedence(infix[i])) {
-                postfix[j++] = pop();
+        else {
+            while (top != NULL && precedence(stackTop()) >= precedence(infix[i])) {
+                postfix[j++] = pop(); // Pop higher/equal precedence operators
             }
-            push(infix[i]);
+            push(infix[i]); // Push current operator
         }
     }
 
-    // Pop remaining operators
-    while (!isEmpty()) {
-        postfix[j++] = pop();
+    while (top != NULL) {
+        postfix[j++] = pop(); // Pop remaining operators
     }
 
     postfix[j] = '\0';
     return postfix;
 }
 
-// ---------------- Main ----------------
+// Main function
 int main() {
     char infix[100];
     printf("Enter infix expression: ");
