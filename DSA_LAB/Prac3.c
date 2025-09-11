@@ -33,7 +33,7 @@ int pop(struct Stack *st) {
     return x;
 }
 
-int peek(struct Stack st) {
+int peek(struct Stack st,int x) {
   int  index = st.top;
     if (index < 0 || index > st.top) {
         printf("Invalid position\n");
